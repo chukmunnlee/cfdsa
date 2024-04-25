@@ -1,0 +1,72 @@
+---
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+- ../../base
+
+# Create a new namespace 
+namespace: dev
+namePrefix: dev-
+commonLabels:
+  env: dev
+
+# Increase the number of replicas
+replicas:
+- name: bggapp-deploy
+  count: 2
+
+# Test a new image
+images:
+- name: chukmunnlee/bgg-backend
+  newTag: v2
+
+# Generate secret for testing
+secretGenerator:
+- name: bgg-secret
+  namespace: bgg-ns
+  type: Opaque
+  behavior: create
+  literals:
+    # hello, world
+  - MYSQL_ROOT_PASSWORD=aGVsbG8sIHdvcmxk
+  - BGG_DB_PASSWORD=aGVsbG8sIHdvcmxk
+     
+# Patch the Ingress host name and database size
+patches:
+- target:
+    group: networking.k8s.io
+    version: v1
+    kind: Ingress
+    name: bggapp-ing
+  path: patch-ing.yaml
+- target:
+    group: apps
+    version: v1
+    kind: StatefulSet
+    name: bggdb-sts
+  path: patch-sts.yaml
+
+# Update Ingress service name and database service on the deployment
+replacements:
+- source:
+    kind: Service
+    name: bggapp-svc
+    fieldPath: metadata.name
+  targets:
+  - select:
+      kind: Ingress
+      name: bggapp-ing
+    fieldPaths: 
+    - spec.rules.0.http.paths.[path=/].backend.service.name
+- source:
+    kind: Service
+    name: bggdb-svc
+    fieldPath: metadata.name
+  targets:
+  - select:
+      kind: Deployment
+      name: bggapp-deploy
+    fieldPaths: 
+    - spec.template.spec.containers.[name=bggapp-container].env.[name=BGG_DB_HOST].value
+
