@@ -1,4 +1,4 @@
-ARG VERSION=20
+ARG VERSION=22
 
 FROM node:${VERSION}
 
@@ -14,5 +14,5 @@ ENV PORT=3000
 
 EXPOSE ${PORT}
 
-ENTRYPOINT [ "node", "main.js" ]
+ENTRYPOINT node main.js
 
