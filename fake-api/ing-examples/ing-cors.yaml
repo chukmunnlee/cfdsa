@@ -1,0 +1,26 @@
+--- 
+apiVersion: networking.k8s.io/v1 
+kind: Ingress 
+metadata: 
+  name: api-ing
+  namespace: api
+  labels: 
+    app: api
+    name: api-ing
+  annotations:
+    nginx.ingress.kubernetes.io/enable-cors: "true"
+    nginx.ingress.kubernetes.io/limit-rps: "5"
+spec: 
+  ingressClassName: nginx 
+  rules:
+  - host: api.144.126.241.179.nip.io
+    http:
+      paths: 
+      - path: /
+        pathType: Prefix
+        backend: 
+          service: 
+            name: api-svc
+            port: 
+              number: 3000
+
