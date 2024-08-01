@@ -1,0 +1,6 @@
+{
+  "name": "fred",
+  "id": 30,
+  "visitor": false,
+  "emails": ["fred@gmail.com", "ff@acme.com"]
+}
