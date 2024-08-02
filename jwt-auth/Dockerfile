@@ -20,6 +20,9 @@ RUN npm ci --omit=dev
 
 ENV PORT=3000 JWT_SECRET=changeit
 
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+	CMD curl -XGET localhost:${PORT}/healthz || exit 1
+
 EXPOSE ${PORT}
 
 SHELL [ "/bin/sh", "-c" ]

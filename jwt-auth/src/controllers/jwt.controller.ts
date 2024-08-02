@@ -1,12 +1,5 @@
-import {
-  Body,
-  Controller,
-  ForbiddenException,
-  Headers,
-  HttpCode,
-  Post,
-  UnauthorizedException,
-} from '@nestjs/common';
+import { Body, Controller, ForbiddenException, Headers,
+  HttpCode, Post, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { AuthResponse, Payload } from 'src/models';
 
@@ -32,7 +25,8 @@ export class JwtController {
     const token = authHeader.substring(BEARER.length);
 
     const payload = this.jwtSvc.decode(token);
-    if (!payload) throw new ForbiddenException();
+    if (!payload) 
+		throw new ForbiddenException();
 
     return { timestamp: new Date().getTime() } as AuthResponse;
   }
