@@ -1,0 +1,42 @@
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: api-gtw
+  namespace: api-ns
+spec:
+  gatewayClassName: nginx  
+  listeners:
+  - name: http
+    hostname: "*.146.190.195.211.nip.io"
+    protocol: HTTP
+    port: 80
+
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: api-httproute
+  namespace: api-ns
+spec:
+  hostnames:
+  - fakeapi.146.190.195.211.nip.io
+
+  parentRefs:
+  - name: api-gtw
+    sectionName: http
+
+  rules:
+  - matches: 
+    - path: 
+        value: /
+        type: PathPrefix
+    backendRefs:
+    - name: apiv1-svc
+      kind: Service
+      port: 3000
+      weight: 77
+    - name: apiv2-svc
+      kind: Service
+      port: 3000
+      weight: 33
