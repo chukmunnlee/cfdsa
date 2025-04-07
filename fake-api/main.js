@@ -1,15 +1,36 @@
 const express = require('express')
 const morgan = require('morgan')
 
+const otel = require('./telemetry')
+
 const version = process.argv.length >= 3? process.argv[2]: 'v1'
 const PORT = parseInt(process.env.PORT) || 3000
 
 const app = express()
+const metrics = new otel.Telemetry('fake-api', version)
+
+const reqCounter = metrics.meter.createCounter('request_total', 'Total number of requests')
+const reqDuration = metrics.meter.createHistogram('request_duration_ms', 'Request duration in ms')
+const currReqsCounter = metrics.meter.createUpDownCounter('request_current_total', 'Total number of current requests')
 
 app.use(morgan('common'))
 
 app.get('/api/data', (req, resp) => {
-	resp.json({ version })
+  const delay = Math.floor(Math.random() * 3000)
+  const start = Date.now()
+  const attr = { version, path: req.path }
+
+  currReqsCounter.add(1, attr)
+
+  resp.on('finish', () => {
+    reqDuration.record(Date.now() - start, attr)
+    currReqsCounter.add(-1, attr)
+  })
+
+  setTimeout(() => {
+    reqCounter.add(1, attr)
+    resp.json({ version, timestamp: Date.now() })
+  }, delay)
 })
 
 app.use((req, resp) => {
@@ -19,4 +40,5 @@ app.use((req, resp) => {
 
 app.listen(PORT, () => {
 	console.info(`Application started on port ${PORT} at ${new Date()}`)
+  metrics.start()
 })

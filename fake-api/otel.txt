@@ -1,0 +1,9 @@
+npm install @opentelemetry/sdk-node \
+  @opentelemetry/api \
+  @opentelemetry/auto-instrumentations-node \
+  @opentelemetry/sdk-metrics \
+  @opentelemetry/instrumentation-http \
+  @opentelemetry/instrumentation-express \
+  @opentelemetry/exporter-prometheus \
+  @opentelemetry/resources \
+  @opentelemetry/semantic-conventions 
