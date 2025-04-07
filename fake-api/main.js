@@ -24,13 +24,17 @@ app.get('/api/data', (req, resp) => {
 
   resp.on('finish', () => {
     reqDuration.record(Date.now() - start, attr)
-    currReqsCounter.add(-1, attr)
+    currReqsCounter.add(-1, { ...attr, status: 200 })
   })
 
   setTimeout(() => {
     reqCounter.add(1, attr)
-    resp.json({ version, timestamp: Date.now() })
+    resp.status(200).json({ version, timestamp: Date.now() })
   }, delay)
+})
+
+app.get('/healthz', (_, resp) => {
+  resp.status(200).json({ timestamp: Date.now() })
 })
 
 app.use((req, resp) => {
