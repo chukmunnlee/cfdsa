@@ -24,7 +24,7 @@ app.get('/api/data', (req, resp) => {
 
   resp.on('finish', () => {
     reqDuration.record(Date.now() - start, attr)
-    currReqsCounter.add(-1, { ...attr, status: 200 })
+    currReqsCounter.add(-1, attr)
   })
 
   setTimeout(() => {
