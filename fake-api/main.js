@@ -2,12 +2,13 @@ const express = require('express')
 const morgan = require('morgan')
 
 const otel = require('./telemetry')
+const pkg = require('./package.json')
 
 const version = process.argv.length >= 3? process.argv[2]: 'v1'
 const PORT = parseInt(process.env.PORT) || 3000
 
 const app = express()
-const metrics = new otel.Telemetry('fake-api', version)
+const metrics = new otel.Telemetry(pkg.name, version)
 
 const reqCounter = metrics.meter.createCounter('request_total', 'Total number of requests')
 const reqDuration = metrics.meter.createHistogram('request_duration_ms', 'Request duration in ms')
