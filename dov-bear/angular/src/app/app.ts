@@ -1,25 +1,13 @@
-import { Component, OnInit, signal } from '@angular/core';
-
-import { rnd } from './utils'
-
-const COUNT = 4
+import { Component } from '@angular/core';
+import {RouterModule} from '@angular/router';
 
 @Component({
   selector: 'app-root',
-  imports: [],
+  imports: [ RouterModule ],
   templateUrl: './app.html',
-  styleUrl: './app.css'
+  styleUrl: './app.css',
 })
-export class App implements OnInit {
+export class App {
 
-  protected readonly title = signal('angular');
   protected instanceName = 'dov-bear'
-
-  protected dovs: number[] = []
-
-  ngOnInit(): void {
-    //const total = parseInt(req.query['num']) || 4
-    this.dovs = rnd(14, COUNT)
-
-  }
 }
