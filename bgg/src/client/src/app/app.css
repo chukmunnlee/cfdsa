@@ -1,0 +1,12 @@
+.one-line {
+  display: flex;
+  align-items: center;
+}
+
+.pad-left {
+  margin-left: 2vw;
+}
+
+h1 {
+  color: blue;
+}

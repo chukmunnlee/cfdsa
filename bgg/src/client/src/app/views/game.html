@@ -1,0 +1,62 @@
+<h2>Game Id: {{ gid }}</h2>
+
+@if (game$ | async; as game) {
+  <table style="margin-bottom: 3vh;">
+    <tr>
+      <td>
+        <img [src]="game.image" alt="">
+      </td>
+      <td>
+        <table border="1" style="margin-left: 1vw;">
+          <tr>
+            <td>Title:</td>
+            <td> {{ game.name }} </td>
+          </tr>
+          <tr>
+            <td>Year:</td>
+            <td> {{ game.year }} </td>
+          </tr>
+          <tr>
+            <td>URL:</td>
+            <td> <a [href]="game.url" target="_blank">View</a> </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <button type="button" [routerLink]="['/search']" [queryParams]="{ q }">
+          Back
+        </button>
+      </td>
+      <td></td>
+    </tr>
+  </table>
+
+  @if(game.comments.length > 0) {
+    <h3>Comments</h3>
+    <table border="1">
+      <thead>
+        <tr>
+          <th>User</th>
+          <th>Comment</th>
+          <th>Rating</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for(c of game.comments; track $index) {
+          <tr>
+            <td><code>{{ c.user }}</code></td>
+            <td>{{ c.c_text }}</td>
+            <td>{{ c.rating }}</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+
+  } @else {
+    <h3>No comments</h3>
+  }
+} @else {
+  <h3>Game {{ gid }} not found</h3>
+}

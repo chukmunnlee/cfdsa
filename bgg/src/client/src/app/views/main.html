@@ -1,0 +1,18 @@
+<h2>Search</h2>
+
+<form [formGroup]="form" (submit)="performSearch()">
+  <table>
+    <tr>
+      <td>Title</td>
+      <td>
+        <input type="text" size="30" placeholder="Game title" formControlName="q">
+      </td>
+    </tr>
+    <tr>
+      <td></td>
+      <td>
+        <button type="submit" [disabled]="form.invalid">Search</button>
+      </td>
+    </tr>
+  </table>
+</form>

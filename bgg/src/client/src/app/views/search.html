@@ -1,0 +1,10 @@
+<h2>Search title: <code>{{ q }}</code> </h2>
+
+@for(g of results$ | async; track g.gid) {
+  <a [routerLink]="['/game', g.gid ]"  [queryParams]="{ q }"
+      class="game-title">
+    {{ g.name | titlecase }}
+  </a>
+} @empty {
+  <h3>No games were found</h3>
+}
