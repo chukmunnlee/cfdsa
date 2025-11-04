@@ -97,3 +97,8 @@ app.listen(appPort, () => {
   console.info(`Application started on port ${appPort} at ${new Date()}`)
 })
 
+process.on('SIGTERM', () => {
+  console.info('Application terminating. Shutting down connection pool')
+  bggdb.disconnect()
+})
+

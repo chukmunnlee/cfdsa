@@ -1,0 +1,38 @@
+networks:
+  default:
+    name: bgg-net
+    driver: bridge
+
+volumes:
+  db-vol:
+
+services:
+  bgg-database:
+    image: chukmunnlee/bgg-database:nov-2025
+    build: 
+      context: ./data
+    environment:
+    - MYSQL_ROOT_PASSWORD=mypassword
+    volumes:
+    - type: volume
+      source: db-vol
+      target: /var/lib/mysql
+    restart: always
+
+  bgg-app:
+    image: chukmunnlee/bgg-app:nov-2025
+    build: 
+      context: .
+    ports:
+    - 5000:5000
+    restart: always
+    environment:
+    - BGG_DB_USER=root
+    - BGG_DB_PASSWORD=mypassword
+    - BGG_DB_HOST=bgg-database
+    - BGG_PORT=5000
+    depends_on:
+      bgg-database:
+        condition: service_started
+
+
