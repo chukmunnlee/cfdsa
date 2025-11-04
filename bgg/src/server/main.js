@@ -1,7 +1,11 @@
 import express from "express";
+import { join, dirname } from "path"
+import { fileURLToPath } from 'url'
 
 import { BGGDatabase } from "./bggdb.js";
 
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = dirname(__filename)
 
 const dbUser = process.env['BGG_DB_USER'] || 'root'
 const dbPassword = process.env['BGG_DB_PASSWORD'] || 'changeit'
@@ -77,6 +81,8 @@ app.get('/healthz', (_, resp) => {
     })
 
 })
+
+app.use(express.static(join(__dirname, 'public')))
 
 app.use((req, resp) => {
   resp.status(404)
