@@ -1,4 +1,5 @@
-import express from "express";
+import express from "express"
+import morgan from "morgan"
 import { join, dirname } from "path"
 import { fileURLToPath } from 'url'
 
@@ -15,6 +16,8 @@ const appPort = parseInt(process.env['BGG_PORT']) || 3000
 const bggdb = new BGGDatabase(dbUser, dbPassword, dbHost)
 
 const app = express()
+
+app.use(morgan('dev'))
 
 app.get('/api/search', (req, resp) => {
   if (!req.query['q'])

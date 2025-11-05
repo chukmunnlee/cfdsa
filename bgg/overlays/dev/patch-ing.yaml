@@ -1,3 +1,0 @@
-- op: replace
-  path: /spec/rules/0/host
-  value: dev-bggapp-192.168.39.104.nip.io
