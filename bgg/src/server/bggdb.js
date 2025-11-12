@@ -5,16 +5,17 @@ const SQL_SELECT_GAME_BY_NAME = 'select gid, name from game where name like ? or
 const SQL_SELECT_GAME_BY_GID = 'select * from game where gid = ?'
 const SQL_SELECT_COMMENT_BY_GID = 'select user, c_text, rating from comment where gid = ? order by rating desc'
 
-export function BGGDatabase(username, password, host) {
+export function BGGDatabase(username, password, host, port=3306) {
   this.username = username
   this.password = password
   this.host = host
+  this.port = port
 }
 
 BGGDatabase.prototype.connect = function() {
   this.pool = mysql.createPool({
     host: this.host,
-    port: 3306,
+    port: this.port,
     user: this.username,
     password: this.password,
     database: 'bgg',

@@ -11,9 +11,10 @@ const __dirname = dirname(__filename)
 const dbUser = process.env['BGG_DB_USER'] || 'root'
 const dbPassword = process.env['BGG_DB_PASSWORD'] || 'changeit'
 const dbHost = process.env['BGG_DB_HOST'] || '127.0.0.1'
+const dbPort = process.env['BGG_DB_PORT'] || 3306
 const appPort = parseInt(process.env['BGG_PORT']) || 3000
 
-const bggdb = new BGGDatabase(dbUser, dbPassword, dbHost)
+const bggdb = new BGGDatabase(dbUser, dbPassword, dbHost, dbPort)
 
 const app = express()
 

@@ -22,7 +22,8 @@ COPY --from=angular /src/dist/client/browser/* public/
 
 RUN npm ci
 
-ENV BGG_DB_USER=root BGG_DB_PASSWORD=changeit BGG_DB_HOST=db BGG_PORT=5000
+ENV BGG_DB_USER=root BGG_DB_PASSWORD=changeit BGG_DB_HOST=db BGG_DB_PORT=3306
+ENV BGG_PORT=5000
 
 EXPOSE ${BGG_PORT}
 
