@@ -30,6 +30,7 @@ services:
     - BGG_DB_USER=root
     - BGG_DB_PASSWORD=mypassword
     - BGG_DB_HOST=bgg-database
+    - BGG_DB_PORT="3306"
     - BGG_PORT=5000
     depends_on:
       bgg-database:
