@@ -2,7 +2,7 @@
 
   log {
     format console
-    output file {$CADDY_LOGFILE:/var/log/caddy/caddy_access.log}
+    output file {$CADDY_LOGFILE:/var/log/caddy}/caddy_access.log
   }
 
   root * ./html
