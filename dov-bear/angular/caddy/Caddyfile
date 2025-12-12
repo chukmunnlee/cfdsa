@@ -1,7 +1,8 @@
 :{$CADDY_PORT:8080} {
 
-  log stderr {
+  log {
     format console
+    output file {$CADDY_LOGFILE:/var/log/caddy/caddy_access.log}
   }
 
   root * ./html

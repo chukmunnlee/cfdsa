@@ -18,7 +18,9 @@ COPY caddy/Caddyfile .
 COPY caddy/error.html html
 COPY --from=angular /src/dist/angular/browser/ html/
 
-ENV CADDY_PORT=8080
+ENV CADDY_PORT=8080 CADDY_LOGFILE=/var/log/caddy/caddy_access.log
+
+VOLUME /var/log/caddy
 
 EXPOSE ${CADDY_PORT}
 
