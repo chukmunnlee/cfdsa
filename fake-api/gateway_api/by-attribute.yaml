@@ -1,0 +1,38 @@
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: api-httproute
+  namespace: api-ns
+spec:
+  hostnames:
+  - fakeapi.192.168.39.200.nip.io
+
+  parentRefs:
+  - name: api-gtw
+    #namespace: api-ns
+    #port: 80
+    sectionName: http
+
+  rules:
+  - matches: 
+    - path: 
+        value: /
+        type: PathPrefix
+    backendRefs:
+    - name: apiv1-svc
+      kind: Service
+      port: 3000
+  - matches:
+    - path:
+        value: /
+        type: PathPrefix
+      headers:
+      - type: Exact
+        name: X-Version
+        value: v2
+    backendRefs:
+    - name: apiv2-svc
+      kind: Service
+      port: 3000
+
