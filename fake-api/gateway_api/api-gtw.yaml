@@ -11,4 +11,7 @@ spec:
     hostname: "*.192.168.39.200.nip.io"
     protocol: HTTP
     port: 80
+    allowedRoutes:
+      namespaces:
+        from: All
 
