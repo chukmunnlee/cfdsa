@@ -10,7 +10,7 @@ COPY *.js .
 RUN npm ci
 
 ENV PORT=3000 OTEL_PORT=9464
-ENV API_VERSION="v1" 
+ENV API_KEY="abc123" API_VERSION="v2" 
 
 EXPOSE ${PORT} ${OTEL_PORT}
 
@@ -19,5 +19,5 @@ HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
 
 SHELL [ "/bin/sh", "-c" ]
 
-ENTRYPOINT node main.js
+ENTRYPOINT node main.js 
 

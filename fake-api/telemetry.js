@@ -5,10 +5,12 @@ import {MeterProvider, PeriodicExportingMetricReader} from "@opentelemetry/sdk-m
 import {NodeSDK} from "@opentelemetry/sdk-node"
 import {ATTR_SERVICE_NAME, ATTR_SERVICE_VERSION} from "@opentelemetry/semantic-conventions"
 
+import metadata from './package.json' with { type: 'json' }
+
 export let PROM_PORT = 9464
 export let PROM_ENDPOINT = '/metrics'
 export let PROM_INTERVAL = 15
-export let METER_NAME = 'fake-api'
+export let METER_NAME = metadata.name
 
 export function Telemetry(serviceName, version) {
   this.prometheus = new PrometheusExporter(

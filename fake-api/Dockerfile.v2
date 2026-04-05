@@ -1,17 +1,16 @@
-ARG VERSION=22
+ARG VERSION=25
 
 FROM node:${VERSION}
 
 WORKDIR /app
 
-COPY package.json .
-COPY package-lock.json .
-COPY main.js .
-COPY telemetry.js .
+COPY *.json .
+COPY *.js .
 
 RUN npm ci
 
 ENV PORT=3000 OTEL_PORT=9464
+ENV API_VERSION="v2" 
 
 EXPOSE ${PORT} ${OTEL_PORT}
 
@@ -20,5 +19,5 @@ HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
 
 SHELL [ "/bin/sh", "-c" ]
 
-ENTRYPOINT node main.js v2
+ENTRYPOINT node main.js 
 

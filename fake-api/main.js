@@ -2,13 +2,18 @@ const express = require('express')
 const morgan = require('morgan')
 
 const otel = require('./telemetry')
-const pkg = require('./package.json')
+const metadata = require('./package.json')
+const { parseArgs} = require('./options')
 
-const version = process.argv.length >= 3? process.argv[2]: 'v1'
-const PORT = parseInt(process.env.PORT) || 3000
+const options = parseArgs()
+
+const version = options.version
+const PORT = options.port
+const API_KEY = options.apiKey
+const HTTP_X_API_KEY = 'X-API_KEY'
 
 const app = express()
-const metrics = new otel.Telemetry(pkg.name, version)
+const metrics = new otel.Telemetry(metadata.name, version)
 
 const reqCounter = metrics.meter.createCounter('request_total', 'Total number of requests')
 const reqDuration = metrics.meter.createHistogram('request_duration_ms', 'Request duration in ms')
@@ -30,7 +35,15 @@ app.get('/api/data', (req, resp) => {
 
   setTimeout(() => {
     reqCounter.add(1, attr)
-    resp.status(200).json({ version, timestamp: Date.now() })
+    const reqAPIKey = req.get(HTTP_X_API_KEY)
+    if (!(reqAPIKey && API_KEY)) {
+      resp.status(200).json({ version, timestamp: Date.now() })
+      return
+    }
+    if (reqAPIKey == API_KEY)
+      resp.status(200).json({ version: `${version}-auth`, auth: true, timestamp: Date.now() })
+    else
+      resp.status(401).json({ message: 'Failed!', timestamp: Date.now() })
   }, delay)
 })
 
@@ -45,5 +58,6 @@ app.use((req, resp) => {
 
 app.listen(PORT, () => {
 	console.info(`Application started on port ${PORT} at ${new Date()}`)
+  console.info(`Auth enabled: ${!!options.apiKey}`)
   metrics.start()
 })
