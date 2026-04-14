@@ -14,9 +14,8 @@ app.get('/api/products', (req, resp) => {
 
 app.get('/api/product/:category', (req, resp) => {
   const skip = parseInt(req.query.skip) || 0
-  const limit = parseInt(req.query.limit) || 3
+  const limit = parseInt(req.query.limit) || 4
   const category = req.params['category']
-
   fetch(`https://dummyjson.com/products/category/${category}?skip=${skip}&limit=${limit}`)
     .then(result => result.json())
     .then(result => result.products ?? [])

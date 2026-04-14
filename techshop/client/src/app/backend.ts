@@ -14,7 +14,7 @@ export class BackendService {
 
   getProducts(category: string): Promise<Product[]> {
     const params = {
-      skip: 0, limit: 3
+      skip: 0, limit: 4
     }
     return lastValueFrom(
       this.http.get<Product[]>(`/api/product/${category}`, { params })

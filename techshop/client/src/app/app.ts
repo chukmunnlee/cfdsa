@@ -2,6 +2,8 @@ import { Component, inject, OnInit, signal } from '@angular/core';
 import {BackendService} from './backend';
 import {Product} from './models';
 
+const DISCOUNT = 0.20
+
 @Component({
   selector: 'app-root',
   templateUrl: './app.html',
@@ -33,5 +35,13 @@ export class App implements OnInit {
     const full  = Math.round(rating)
     const empty = 5 - full
     return '★'.repeat(full) + '☆'.repeat(empty)
+  }
+
+  protected salePrice(original: number) {
+    return (original * (1 - DISCOUNT)).toFixed(2)
+  }
+
+  protected saving(original: number) {
+    return (original * DISCOUNT).toFixed(2)
   }
 }
