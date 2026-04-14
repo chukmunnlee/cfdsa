@@ -1,1 +1,13 @@
 /* You can add global styles to this file, and also import other style files */
+body::after {
+  content: "Version: __APP_VERSION__";
+  position: fixed;
+  bottom: 10px;
+  right: 10px;
+  font-size: 0.8em;
+  color: #888;
+  background-color: rgba(255, 255, 255, 0.8);
+  padding: 4px 8px;
+  border-radius: 4px;
+  pointer-events: none; /* Keeps it from interfering with clicks */
+}

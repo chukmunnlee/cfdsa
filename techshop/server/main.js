@@ -3,12 +3,13 @@ const morgan = require('morgan')
 const { join } = require('path')
 
 const PORT = parseInt(process.env.PORT) || 3000
+const VERSION = "__APP_VERSION__"
 
 const app = express()
 
 app.use(morgan())
 
-app.get('/api/products', (_req, resp) => {
+app.get('/api/products', (_, resp) => {
   fetch('https://dummyjson.com/products/category-list')
     .then(result => result.json())
     .then(result => { resp.status(200).json(result) })
@@ -36,6 +37,13 @@ app.get('/api/product/:category', (req, resp) => {
     )))
     .then(result => { resp.status(200).json(result) })
     .catch(error => { resp.status(500).json(error) })
+})
+
+app.get('/version', (_, resp) => {
+  resp.status(200).json({
+    version: VERSION,
+    timestamp: Date.now()
+  })
 })
 
 app.use(express.static(join(__dirname, 'public')))
