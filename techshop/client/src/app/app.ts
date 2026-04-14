@@ -14,16 +14,23 @@ export class App implements OnInit {
 
   protected title = 'client'
   protected category = ''
-  //protected products: Product[] = []
+  protected categories = signal<string[]>([])
   protected products = signal<Product[]>([])
   private backendSvc = inject(BackendService)
 
   async ngOnInit() {
     const categories = await this.backendSvc.getCategories()
+    this.categories.set(categories)
     this.category = this.randomCategory(categories)
-    this.backendSvc.getProducts(this.category)
-      .then(result => this.products.set(result))
-    console.info('>>> products: ', this.products)
+    this.getProduct(this.category)
+  }
+
+  getProduct(category: string) {
+    this.backendSvc.getProducts(category)
+      .then(result => {
+        this.category = category
+        this.products.set(result)
+      })
   }
 
   private randomCategory(categories: string[]): string {
@@ -43,5 +50,9 @@ export class App implements OnInit {
 
   protected saving(original: number) {
     return (original * DISCOUNT).toFixed(2)
+  }
+
+  protected isLowStock(stock: number) {
+      return (stock > 0) && (stock <= 10)
   }
 }

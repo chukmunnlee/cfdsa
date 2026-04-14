@@ -1,0 +1,61 @@
+<!-- v3 -->
+<div class="shell">
+
+  <header>
+    <a class="logo" href="#">
+      <span class="logo-dot"></span> TechShop </a>
+    <div class="header-right">
+      <nav style="display:flex;gap:1.5rem">
+        <a href="#">Products</a>
+        <a href="#">About</a>
+        <a href="#">Contact</a>
+      </nav>
+      <span class="new-badge">New Arrivals</span>
+    </div>
+  </header>
+
+  <aside>
+    <p class="sidebar-label">Categories</p>
+    <ul class="filter-list" id="filter-list">
+      @for (c of categories(); track $index) {
+        <li>
+          <button class="filter-btn" (click)="getProduct(c)">
+            {{ c | uppercase }}
+          </button>
+        </li>
+      }
+    </ul>
+
+  </aside>
+
+  <div class="main">
+
+    <div class="section-header">
+      <h2 class="section-title" id="section-title">{{ category | uppercase }}</h2>
+    </div>
+
+    <div class="grid" id="grid">
+      @for (p of products(); track p.id) {
+        <article class="card" [style.padding-bottom]="isLowStock(p.stock) ? '28px' : '0px'">
+          <img class="card-img" [src]="p.thumbnail" [alt]="p.title" loading="lazy" />
+          <div class="card-body">
+            <span class="card-category">{{category}}</span>
+            <p class="card-name">{{p.title}}</p>
+            <div class="card-footer">
+              <span class="card-price">{{p.price | currency }}</span>
+              <span class="card-rating">
+                <span class="stars">{{stars(p.rating)}}</span> {{p.rating.toFixed(1)}}
+              </span>
+            </div>
+          </div>
+          @if (isLowStock(p.stock)) {
+            <div class="low-stock">Only {{p.stock}} left</div>
+          }
+        </article>
+      }
+    </div>
+  </div>
+
+  <footer>TechShop — New Arrivals</footer>
+
+</div>
