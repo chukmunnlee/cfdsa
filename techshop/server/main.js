@@ -1,11 +1,14 @@
 const express = require('express')
+const morgan = require('morgan')
 const { join } = require('path')
 
 const PORT = parseInt(process.env.PORT) || 3000
 
 const app = express()
 
-app.get('/api/products', (req, resp) => {
+app.use(morgan())
+
+app.get('/api/products', (_req, resp) => {
   fetch('https://dummyjson.com/products/category-list')
     .then(result => result.json())
     .then(result => { resp.status(200).json(result) })
