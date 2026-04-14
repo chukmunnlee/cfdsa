@@ -1,0 +1,73 @@
+workflow:
+  rules:
+  - if: $CI_COMMIT_MESSAGE =~ /NO_RUN/
+    when: never
+  # run when it is a merge request
+  - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+  # run when we are merging back to master (default)
+  - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+  # run when we are creating a tag
+  - if: $CI_COMMIT_TAG
+
+stages:
+- build
+- test
+- package
+
+build_angular:
+  stage: build
+  image: node:25
+  before_script:
+  - export PATH="${PATH}:node_modules/.bin"
+  - sed -i "s/__COMMIT__/${CI_COMMIT_SHORT_SHA}/" src/index.html
+  script:
+  - npm ci
+  - ng build
+  artifacts:
+    paths:
+    - dist/countingbook/browser
+    when: on_success
+    expire_in: 15 mins
+
+test_build:
+  stage: test
+  image: ubuntu:noble
+  script:
+  - test -f dist/countingbook/browser/index.html
+  - test ! -z "$(grep ${CI_COMMIT_SHORT_SHA} dist/countingbook/browser/index.html)"
+  needs:
+  - build_angular
+  rules:
+  - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+    when: on_success
+
+build_image:
+  stage: package
+  image: docker
+  services:
+  - docker:dind
+  variables:
+    IMAGE_NAME: ${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHA}
+  script:
+  - echo "${CI_REGISTRY_PASSWORD}" | docker login -u ${CI_REGISTRY_USER} --password-stdin  ${CI_REGISTRY}
+  - docker build -t ${IMAGE_NAME} .
+  - docker push ${IMAGE_NAME}
+  needs:
+  - build_angular
+  rules:
+  - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+    variables:
+      # important use CI_MERGE_REQUEST_SOURCE_BRANCH_SHA
+      IMAGE_NAME: ${CI_REGISTRY_IMAGE}:${CI_MERGE_REQUEST_SOURCE_BRANCH_SHA}
+
+generate_release:
+  stage: package
+  image: ubuntu:noble
+  script:
+  - mkdir -p changelog
+  - echo "<h2><code>${CI_COMMIT_SHORT_SHA}</code></h2> $(date) ${CI_COMMIT_MESSAGE}" >> changelog/index.html
+  pages:
+    publish: changelog
+  rules:
+  - if: '$CI_COMMIT_TAG'
+    when: on_success

@@ -1,0 +1,58 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: countingbook-appset
+  namespace: argocd
+  finalizers:
+  - resources-finalizer.argocd.argoproj.io
+spec:
+  goTemplate: true
+  goTemplateOptions: [ "missingkey=error" ]
+  generators:
+  - pullRequest:
+      gitlab:
+        project: "80329880"
+        api: https://gitlab.com
+        pullRequestState: opened
+        labels: [ preview ]
+      filters:
+      - branchMatch: '^feature/.+$'
+        targetBranchMatch: '(main|master)'
+      requeueAfterSeconds: 120
+  # https://argo-cd.readthedocs.io/en/stable/operator-manual/applicationset/Generators-Pull-Request/#template
+  template:
+    metadata:
+      name: countingbook-app
+      finalizers:
+      - resources-finalizer.argocd.argoproj.io
+    spec:
+      project: default
+      source:
+        repoURL: https://gitlab.com/soda9105822/countingbook.git
+        path: manifests
+        targetRevision: '{{.head_sha}}'
+        kustomize:
+          commonLabels:
+            app.kubernets.io/instance: '{{.branch_slug}}-{{.number}}'
+          images:
+          #- "countingbook-container=registry.gitlab.com/soda9105822/countingbook:{{.head_short_sha}}"
+          - "registry.gitlab.com/soda9105822/countingbook:{{.head_sha}}"
+      destination:
+        namespace: 'countingbook-{{.branch_slug}}'
+        server: https://kubernetes.default.svc
+      syncPolicy:
+        automated:
+          selfHeal: true
+          prune: true
+        syncOptions:
+        - CreateNamespace=true
+        - RespectIgnoreDifferences=true
+      ignoreDifferences:
+      - group: argoproj.io
+        kind: Rollout
+        name: countingbook-ro
+        namespace: countingbook
+        jsonPointers:
+        - /spec/replicas
+

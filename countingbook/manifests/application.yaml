@@ -1,0 +1,31 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: countingbook-app
+  namespace: argocd
+  finalizers:
+  - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  source:
+    repoURL: https://gitlab.com/soda9105822/countingbook.git
+    path: manifests
+    targetRevision: HEAD
+  destination:
+    namespace: countingbook
+    server: https://kubernetes.default.svc
+  syncPolicy:
+    automated:
+      selfHeal: true
+      prune: true
+    syncOptions:
+    - CreateNamespace=true
+    - RespectIgnoreDifferences=true
+  ignoreDifferences:
+  - group: argoproj.io
+    kind: Rollout
+    name: countingbook-ro
+    namespace: countingbook
+    jsonPointers:
+    - /spec/replicas
