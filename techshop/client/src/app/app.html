@@ -1,0 +1,34 @@
+<header>
+  <a class="logo" href="#">TechShop</a>
+  <nav>
+    <a href="#">Products</a>
+    <a href="#">About</a>
+    <a href="#">Contact</a>
+  </nav>
+</header>
+
+<main class="page">
+  <h1 class="page-title">All products</h1>
+  <div class="grid" id="grid">
+  @for (p of products(); track p.id) {
+    <article class="card">
+      <img class="card-img" [src]="p.thumbnail" [alt]="p.title" loading="lazy" />
+      <div class="card-body">
+        <span class="card-category">{{category}}</span>
+        <p class="card-name">{{p.title}}</p>
+        <p class="card-price">{{p.price | currency }}</p>
+        <p class="card-rating">
+          <span class="stars">{{stars(p.rating)}}</span>
+          {{p.rating.toFixed(1)}} &middot; {{p.stock}} in stock
+        </p>
+      </div>
+    </article>
+  }
+  @empty {
+    <p class="page-sub" id="product-count">Loading…</p>
+  }
+  </div>
+</main>
+
+<footer>© 2025 TechShop</footer>
+

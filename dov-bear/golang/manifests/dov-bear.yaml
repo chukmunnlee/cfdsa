@@ -1,0 +1,70 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: workshop03
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: dov-bear-svc
+  namespace: workshop03
+spec:
+  type: ClusterIP
+  selector:
+    app: dov-bear
+    name: dov-bear-po
+  ports:
+  - name: http
+    port: 3000
+    targetPort: 3000
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: preview-dov-bear-svc
+  namespace: workshop03
+spec:
+  type: ClusterIP
+  selector:
+    app: dov-bear
+    name: dov-bear-po
+  ports:
+  - name: http
+    port: 3000
+    targetPort: 3000
+
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Rollout
+metadata:
+  name: dov-bear-ro
+  namespace: workshop03
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      &pod-labels
+      app: dov-bear
+      name: dov-bear-po
+  strategy:
+    blueGreen:
+      activeService: dov-bear-svc
+      previewService: preview-dov-bear-svc
+      autoPromotionEnabled: false
+  template:
+    metadata:
+      labels:
+        <<: *pod-labels
+    spec:
+      containers:
+      - name: dov-bear-container
+        image: registry.gitlab.com/soda9105822/dov-bear:v1
+        imagePullPolicy: Always
+        ports:
+        - name: http
+          containerPort: 3000
+      imagePullSecrets:
+      - name: dov-bear-registry  

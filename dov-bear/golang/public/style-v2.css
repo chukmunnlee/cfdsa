@@ -1,0 +1,32 @@
+body {
+	width: 100%;
+	height: 100%;
+  background-color: lightgrey;
+}
+
+h1 {
+	font-size: 2.5em;
+}
+
+code {
+	color: #FF336E;
+}
+
+img {
+  margin-bottom: 3vh ;
+  border-radius: 8px;
+  border: 1px black solid;
+  transition-property: box-shadow;
+  transition-duration: 250ms;
+  transition-timing-function: ease-out;
+}
+
+img:hover {
+  box-shadow: 10px 10px 5px darkgrey;
+}
+
+.center-it {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
