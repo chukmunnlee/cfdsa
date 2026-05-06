@@ -1,0 +1,17 @@
+:{$CADDY_PORT:8080} {
+
+  log {
+    format console
+    output file {$CADDY_LOGFILE:/var/log/caddy}/caddy_access.log
+  }
+
+  root * ./html
+  try_files {path} {path}/index.html =404
+  file_server
+
+  handle_errors  {
+    rewrite * /error.html
+    templates
+    file_server
+  }
+}
