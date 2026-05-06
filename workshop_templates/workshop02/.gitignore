@@ -1,0 +1,51 @@
+# See http://help.github.com/ignore-files/ for more about ignoring files.
+
+# Node
+npm-debug.log*
+node_modules/
+.npm/
+
+# IDEs and editors
+/.idea/
+.project
+.classpath
+.c9/
+.ionide/
+.vscode/        # Visual Studio Code
+
+# Typings
+/typings/
+
+# Output of `ng build`
+/dist/          # The build output directory
+
+# The Angular snack without the junk files:
+/out-tsc/
+
+# Output of `ng pwa`
+/src/manifest.webmanifest
+
+# Output of `ng deploy`
+/dist/
+
+# End of Angular-specific rules
+
+# Unit test coverage
+/coverage/
+
+# E2E test output
+/e2e/
+/cypress/screenshots/
+/cypress/videos/
+
+#.angular directory (Angular 14+ cache)
+/.angular/cache/
+
+# Environment files
+/.env
+/.env.development
+/.env.production
+
+# System Files
+.DS_Store
+Thumbs.db
