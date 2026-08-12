@@ -36,14 +36,22 @@ app.get('/api/data', (req, resp) => {
   setTimeout(() => {
     reqCounter.add(1, attr)
     const reqAPIKey = req.get(HTTP_X_API_KEY)
-    if (!(reqAPIKey && API_KEY)) {
-      resp.status(200).json({ version, timestamp: Date.now() })
-      return
+    const payload = { version, timestamp: Date.now() }
+
+    if (!!options.uid)
+      payload['uid'] = options.uid
+
+    if (!!API_KEY) {
+      if (reqAPIKey != API_KEY) {
+        delete payload.version
+        payload['message'] = 'Fail authentication!'
+        resp.status(401).json(payload)
+        return
+      }
     }
-    if (reqAPIKey == API_KEY)
-      resp.status(200).json({ version: `${version}-auth`, auth: true, timestamp: Date.now() })
-    else
-      resp.status(401).json({ message: 'Failed!', timestamp: Date.now() })
+
+    resp.status(200).json(payload)
+
   }, delay)
 })
 

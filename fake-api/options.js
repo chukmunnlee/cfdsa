@@ -3,7 +3,8 @@ import commandLineArgs from "command-line-args"
 const optDef = [
   { name: 'port', type: Number, defaultValue: parseInt(process.env.PORT) || 3000 },
   { name: 'version', type: String, defaultValue: process.env.API_VERSION || 'v1' },
-  { name: 'apiKey', type: String, defaultValue: process.env.API_KEY }
+  { name: 'apiKey', type: String, defaultValue: process.env.API_KEY },
+  { name: 'uid', type: String, defaultValue: process.env.UID || '' }
 ]
 
 export function parseArgs () {
