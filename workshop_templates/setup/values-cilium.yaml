@@ -1,0 +1,23 @@
+kubeProxyReplacement: true
+
+gatewayAPI:
+  enabled: true
+
+hubble:
+  enabled: true
+  relay:
+    enabled: true
+  ui:
+    enabled: true
+  metrics:
+    enabled: [ dns:query;ignoreAAAA;drop,tcp,flow,icmp,http]
+    enableOpenMetrics: true
+    port: 9965
+
+envoy:
+  securityContext:
+    privileged: true
+
+l2announcements:
+  enabled: true
+

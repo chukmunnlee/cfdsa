@@ -1,0 +1,64 @@
+0. Setup
+    OSX/Linux set the execute bit 
+      chmod a+x bin/install-gateway-crds.sh
+
+1. Create a Docker network call kind
+    docker network create kind --driver=bridge --subnet=172.25.0.0/16 --gateway=172.25.0.1 
+
+2. Create the cluster
+    kind create cluster --config cluster.yaml
+
+3. Wait until all the pods are either at Running or Pending state
+    kubectl get po -A
+      NAMESPACE            NAME                                              READY   STATUS    RESTARTS   AGE
+      kube-system          coredns-559f6c778d-5pz92                          0/1     Pending   0          14s
+      kube-system          coredns-559f6c778d-v2gpx                          0/1     Pending   0          14s
+      kube-system          etcd-mycluster-control-plane                      1/1     Running   0          24s
+      kube-system          kube-apiserver-mycluster-control-plane            1/1     Running   0          24s
+      kube-system          kube-controller-manager-mycluster-control-plane   1/1     Running   0          24s
+      kube-system          kube-scheduler-mycluster-control-plane            1/1     Running   0          24s
+      local-path-storage   local-path-provisioner-75f7fc7dc5-4cl7b           0/1     Pending   0          14s
+
+4. Install the Gateway CRDS
+    OSX/Linux - ./bin/install-gateway-crds.sh
+    Windows CMD/PowerShell - .\bin\install-gateway-crds.cmd
+
+5. Install Cilium for Linux/OSX
+    cilium install -f values-cilium.yaml
+
+   Install Cilium for Windows
+    cilium install -f windows_values-cilium.yaml
+
+   You should see the following running pods 
+      kubectl get po -A
+        NAMESPACE            NAME                                              READY   STATUS    RESTARTS   AGE
+        kube-system          cilium-5fpw4                                      1/1     Running   0          6m55s
+        kube-system          cilium-6nsbz                                      1/1     Running   0          6m55s
+        kube-system          cilium-envoy-jjzwp                                1/1     Running   0          6m55s
+        kube-system          cilium-envoy-t4h9f                                1/1     Running   0          6m55s
+        kube-system          cilium-operator-5497c6745-fkhlc                   1/1     Running   0          6m55s
+        kube-system          coredns-559f6c778d-hrwsz                          1/1     Running   0          8m8s
+        kube-system          coredns-559f6c778d-svb5t                          1/1     Running   0          8m8s
+        kube-system          etcd-mycluster-control-plane                      1/1     Running   0          8m15s
+        kube-system          hubble-relay-54bdf95896-9fs5g                     1/1     Running   0          6m55s
+        kube-system          hubble-ui-846b44c48b-hr4tb                        2/2     Running   0          6m55s
+        kube-system          kube-apiserver-mycluster-control-plane            1/1     Running   0          8m15s
+        kube-system          kube-controller-manager-mycluster-control-plane   1/1     Running   0          8m15s
+        kube-system          kube-scheduler-mycluster-control-plane            1/1     Running   0          8m15s
+        kube-system          metrics-server-84c99cb944-5gpt8                   1/1     Running   0          3m4s
+        local-path-storage   local-path-provisioner-75f7fc7dc5-xfc42           1/1     Running   0          8m8s
+
+6. Windows - open CMD with admin privileges
+    cloud-provider-kind.exe --gateway-channel disabled --enable-lb-port-mapping
+
+   Linux/OSX
+    Setup L2 announcement for Cilium, Note: the IP pool range must be in the kind network CIDR range (step 1)
+        kubectl apply -f ./l2announcement.yaml
+
+   OSX
+    Start docker-mac-net-connect, if not started
+    sudo brew services start chipmk/tap/docker-mac-net-connect 
+
+7. Install Metric Server (optional)
+    kubectl apply -f ./metrics_server.yaml
+  
