@@ -1,0 +1,71 @@
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: umamidb-pvc
+  namespace: umami
+spec:
+  storageClassName: standard
+  accessModes: [ ReadWriteOncePod ]
+  resources:
+    requests:
+      storage: 2Gi
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: umamidb-deploy
+  namespace: umami
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      &pod-labels
+      app: umami
+      tier: db
+      env: dev
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        <<: *pod-labels
+    spec:
+      volumes:
+      - name: data-vol
+        persistentVolumeClaim:
+          claimName: umamidb-pvc
+      containers:
+      - name: umamidb-container
+        image: postgres:16-alpine
+        imagePullPolicy: IfNotPresent
+        envFrom:
+        - configMapRef:
+            name: umami-cm
+        - secretRef:
+            name: umami-secret
+        ports:
+        - containerPort: 5432
+        volumeMounts:
+        - name: data-vol
+          mountPath: /var/lib/postgresql/data
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: umamidb-svc
+  namespace: umami
+spec:
+  type: ClusterIP
+  selector:
+    app: umami
+    tier: db
+    env: dev
+  ports:
+  - port: 5432
+    targetPort: 5432
+
+
+

@@ -1,0 +1,46 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: umami
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: umami-cm
+  namespace: umami
+data:
+  POSTGRES_USER: umami
+  POSTGRES_DB: umami
+  PGDATA: /var/lib/postgresql/data/pgdata
+
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: umami-secret
+  namespace: umami
+data:
+  # changeit
+  POSTGRES_PASSWORD: Y2hhbmdlaXQ=
+  # openssl rand -hex 32 | base64 -w0 -
+  APP_SECRET: NGU1NzZiN2EyYzhmNWQ5NjhmZDRlMjdiMjVhMzA3NGYwNzA1YTIwMjBjYjMwODkzYjZjMWM5ODhiY2JjYTBiOQo=
+
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: default-gtw
+spec:
+  gatewayClassName: cilium
+  listeners:
+  - name: http
+    port: 80
+    protocol: HTTP
+    hostname: '*.nip.io'
+    allowedRoutes:
+      namespaces:
+        from: All
+
+

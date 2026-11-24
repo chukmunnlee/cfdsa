@@ -1,0 +1,105 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: umamiapp-deploy
+  namespace: umami
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      &pod-labels
+      app: umami
+      tier: app
+      env: dev
+  template:
+    metadata:
+      labels:
+        <<: *pod-labels
+    spec:
+      containers:
+      - name: umamiapp-container
+        image: ghcr.io/umami-software/umami:latest
+        envFrom:
+        - configMapRef:
+            name: umami-cm
+        - secretRef:
+            name: umami-secret
+        env:
+        - name: DATABASE_URL
+          value: postgresql://$(POSTGRES_USER):$(POSTGRES_PASSWORD)@umamidb-svc.umami.svc.cluster.local:5432/$(POSTGRES_DB)
+        resources:
+          requests:
+            cpu: 256m
+            memory: 512Mi
+          limits:
+            cpu: 256m
+            memory: 512Mi
+        ports:
+        - containerPort: 3000
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: umamiapp-svc
+  namespace: umami
+spec:
+  type: ClusterIP
+  selector:
+    app: umami
+    tier: app
+    env: dev
+  ports:
+  - port: 3000
+    targetPort: 3000
+
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: umamiapp-hpa
+  namespace: umami
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: umamiapp-deploy
+  minReplicas: 1
+  maxReplicas: 4
+  metrics:
+  - type: Resource
+    resource:
+      name: memory
+      target:
+        type: Utilization
+        averageUtilization: 80
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 80
+
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: umamiapp-httproute
+  namespace: umami
+spec:
+  hostnames:
+  - umami.172.25.39.200.nip.io
+  parentRefs:
+  - name: default-gtw
+    namespace: default
+    port: 80
+  rules:
+  - matches:
+    - path:
+        type: PathPrefix
+        value: /
+    backendRefs:
+    - name: umamiapp-svc
+      port: 3000
+
